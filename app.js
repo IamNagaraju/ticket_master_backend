@@ -4,6 +4,9 @@ const bodyParser = require('body-parser')
 
 const morgan =require('morgan')
 
+const mongoose = require('./config/db');
+
+console.log(mongoose);
 const app = express();
 
 const port = 3000;
