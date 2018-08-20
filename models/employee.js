@@ -3,7 +3,9 @@ const Schema = mongoose.Schema;
 
 const employeeSchema = new Schema({
     name:{
-        type:String
+        type:String,
+        required:true,
+        unique:true
     },
     email:{
         type:String
@@ -23,7 +25,7 @@ const employeeSchema = new Schema({
     },
     address:{
         street:{
-            type:String
+            type:String 
         },
         city:{
             type:String,

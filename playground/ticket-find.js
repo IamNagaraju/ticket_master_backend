@@ -18,7 +18,7 @@ const Ticket = require('../models/ticket');
 // Ticket.find({priority:'High',department:'Technical'}).then(tickets => console.log(tickets));
 //to find count of documents in acollection
 
-// Ticket.countDocuments().then(value => console.log(value));
+Ticket.countDocuments().then(value => console.log(value));
 
 // to find one record 
 
@@ -39,4 +39,5 @@ const Ticket = require('../models/ticket');
 // Ticket.find().sort({name:-1}).then(tickets =>console.log(tickets));
 
 //sort createdAt based on asc order
-Ticket.find().sort({createdAt:1}).then(tickets =>console.log(tickets));
+// Ticket.find().sort({createdAt:1}).then(tickets =>console.log(tickets));
+
