@@ -1,0 +1,34 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Listing Employees-<span id="count">0</span></h2>
+    <div id="name"></div>
+    <ol id="data"></ol>
+    <form id="addContact" name="AddContact">
+        <label for="employee">Employee</label>
+      <select id="employee"name="Employee">
+ 
+      </select><br/><br/>
+      
+      <label for="numType">numType</label>
+      <select id="numType"name="numType">
+       <option value=" "><label>Select</label></option>
+       <option value="personal"><label>personal</label></option>
+       <option value="home"><label>Home</label></option>
+       <option value="office"><label>Office</label></option>
+      </select><br/><br/>
+      
+      <label>MobileNumber</label>
+      <input type="number" name="number" id="number"/><br/><br/>
+      <input type="submit" />
+    </form>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="./ticket-front-end.js"></script>
+</body>
+</html>
