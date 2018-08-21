@@ -66,12 +66,44 @@ app.post('/employee/:id/mobile_numbers',(req,res) => {
     .catch(err => res.send(err))
 })
 
-app.put('/employee/:id',(req,res) =>{
-let body = _.pick(req.body,['email','hobbies','salary']);
-Employee.findByIdAndUpdate(req.params.id,{$set:body},{new:true}).then(employee =>{
-(employee) ? res.send(employee) : res.send({notice:'your id is not found'})
+app.put('/mobile_numbers/:id',(req,res) =>{
+    Employee.update({ 'mobileNumbers._id':req.params.id} , {$set: { 'mobileNumbers.$.numType': req.body.numType }}, { new: true })
+    .then((error, employee) =>{
+        console.log(employee);
+        res.send({employee});
+    })
+    .catch(err => res.status(400).send(err))
 })
-.catch(err => res.send(err))
+
+app.put('/employee/:id/mobile_numbers/:mobile_id',(req,res) =>{
+    let id  = req.params.id;
+    let mobileId  = req.params.mobile_id;
+    let body = _.pick(req.body,['numType','mobileNumber']);
+    Employee.findById(id).then(employee =>{
+        if(employee) {
+        let contact = employee.mobileNumbers.id(mobileId);
+        contact.numType = body.numType ? body.numType : contact.numType;
+        contact.mobileNumber = body.mobileNumber ? body.numType : contact.mobileNumber;
+        return employee.save();
+        }
+        res.send({notice:'employee not found'})
+    })
+    .then(employee => res.send({contact,notice:'updated'}))
+    .catch(err => res.send(err))
+})
+
+app.delete('/employee/:id/mobile_numbers/:mobile_id',(req,res) =>{
+    let id = req.params.id;
+    let mobileId = req.params.mobile_id;
+    Employee.findById(id).then(employee => {
+        if(employee) {
+        employee.mobileNumbers.remove(mobileId);
+        return employee.save();
+        }
+        res.send({notice:'employee not found'})
+    })
+    .then(employee => res.send({notice:'suceccesfully deleted'}))
+    .catch(err => res.send(err))
 })
 
 app.delete('/employee/:id',(req,res) =>{
