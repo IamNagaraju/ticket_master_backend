@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const ticketSchema = mongoose.Schema({
+
+const ticketSchema = new Schema({
+    code:{
+       type:String
+    },
     name:{
         type:String,
         required:true
@@ -24,9 +29,32 @@ const ticketSchema = mongoose.Schema({
     createdAt:{
         type:Date,
         default:Date.now
+    },
+    employee:{
+        type:Schema.Types.ObjectId,
+        ref:'Employee'
     }
 })
+//no using of arrow fucntions when we are using this keyword
+ticketSchema.statics.openTickets = function () {
+    return this.find({status:'open'});
+}
 
-const Ticket = mongoose.model('Tickets',ticketSchema);
+ticketSchema.statics.completdTickets = function() {
+    return this.find({status:'completed'});
+}
+
+ticketSchema.statics.findByPriority = function(value) {
+    return this.find({priority:value})
+}
+
+ticketSchema.pre('save',function(next) {
+ if(!this.code) {
+     this.code = 'DCT-' + this._id.toString().slice(12);
+ }
+ next();
+})
+
+const Ticket = mongoose.model('Ticket',ticketSchema);
 
 module.exports = Ticket;

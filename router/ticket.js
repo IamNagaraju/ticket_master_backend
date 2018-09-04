@@ -5,7 +5,8 @@ const _=require('lodash');
 // router.get('/', (req, res) => {
 //     res.send({ msg: 'welcome to ticket master' })
 //   })
-  
+
+
   router.get('/', (req, res) => {
     Ticket.find()
       .then((tickets) => {
@@ -16,8 +17,44 @@ const _=require('lodash');
       })
   })
   
+  router.get('/:id',(req,res) => {
+    let id =req.params.id;
+    Ticket.findById(id).populate('employee').then(ticket =>{
+      if(ticket) {
+        res.send(ticket);
+      } else {
+        res.send({notice:'Ticket not found'})
+      }
+    })
+  })
+router.get('/status/open',(req,res)=> {
+  Ticket.openTickets().then(tickets =>{
+    if(tickets) {
+      res.send(tickets);
+    }
+    res.send({notice:'tickets not fflound'})
+  });
+});
+
+router.get('/status/completed',(req,res)=> {
+  Ticket.completdTickets().then(tickets =>{
+    if(tickets) {
+      res.send(tickets);
+    }
+    res.send({notice:'tickets not fflound'})
+  });
+});
+
+router.get('/priority/:value',(req,res) =>{
+  Ticket.findByPriority(req.params.value).then(tickets =>{
+    res.send(tickets);
+  });
+});
+
+
+
   router.post('/', (req, res) => {
-    let body =_.pick(req.body,['name','department','message','priority'])
+    let body =_.pick(req.body,['name','department','message','priority','employee'])
     let ticket = new Ticket(body)
     ticket.save().then((ticket) => {
       res.send(ticket);

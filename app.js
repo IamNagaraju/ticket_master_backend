@@ -1,9 +1,12 @@
 const express = require('express');
-const {ticketRouter} = require('./router/ticket');
 const bodyParser = require('body-parser')
-const { ObjectId } = require('mongodb')
 const morgan = require('morgan')
 const _=require('lodash');
+
+const {ticketRouter} = require('./router/ticket');
+const { ObjectId } = require('mongodb')
+const { User } = require('../ticket-master-back-end/models/user')
+const { usersRouter } = require('./router/user')
 const mongoose = require('./config/db');
 const Ticket = require('./models/ticket');
 const {employeeRouter} = require('./router/employee');
@@ -26,6 +29,7 @@ app.use(morgan('short'));
 
 app.use('/tickets',ticketRouter);
 app.use('/employee',employeeRouter);
+app.use('/users',usersRouter);
 
 app.listen(port, () => {
   console.log('listing to port num ' + port);

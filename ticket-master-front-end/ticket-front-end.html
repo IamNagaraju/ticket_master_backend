@@ -1,34 +1,131 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
 </head>
+
 <body>
-    <h2>Listing Employees-<span id="count">0</span></h2>
-    <div id="name"></div>
-    <ol id="data"></ol>
-    <form id="addContact" name="AddContact">
-        <label for="employee">Employee</label>
-      <select id="employee"name="Employee">
- 
-      </select><br/><br/>
-      
-      <label for="numType">numType</label>
-      <select id="numType"name="numType">
-       <option value=" "><label>Select</label></option>
-       <option value="personal"><label>personal</label></option>
-       <option value="home"><label>Home</label></option>
-       <option value="office"><label>Office</label></option>
-      </select><br/><br/>
-      
-      <label>MobileNumber</label>
-      <input type="number" name="number" id="number"/><br/><br/>
-      <input type="submit" />
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <div id="app">
+    <form id="form">
+
     </form>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="./ticket-front-end.js"></script>
+
+  </div>
+  <div class="col-md-6">
+    <h3>Add Contact</h3>
+
+
+    <form id="contactForm">
+      <label for="employee">Employee</label>
+      <select name="employee" id="employee">
+        <option value="">Select</option>
+      </select>
+      <br/>
+
+      <label for="numberType">NumberType</label>
+      <select name="numberType" id="numberType">
+        <option value="">Select</option>
+        <option value="Office">Office</option>
+        <option value="Home">Home</option>
+        <option value="Secreatery">Secreatery</option>
+      </select>
+      <br/>
+
+      <label for="number">Number</label>
+      <input type="text" id="number">
+      <br/>
+
+      <input type="submit" class="btn btn-primary" /> or <input type="reset" class="btn btn-outline-warning" />
+
+
+    </form>
+  </div>
+
+  <script>
+    let appHandle = document.getElementById('app');
+    let formHandle = document.getElementById('form');
+    let employeeHandle = document.getElementById('employee');
+    let contactFormHandle = document.getElementById('contactForm');
+    let numberHandle = document.getElementById('number');
+    let numberTypeHandle = document.getElementById('numberType');
+
+    function getEmployees() {
+      axios.get('http://localhost:3000/employee').then(response => {
+        response.data.forEach((element) => {
+          build(element);
+        })
+      }).catch(err => console.log(err));
+    }
+
+
+    function build(element) {
+
+      employeeHandle.innerHTML += `
+      <option value="${element._id}">${element.name}</option>
+      `;
+
+      let ol = document.createElement('ol');
+      ol.setAttribute('id', `${element._id}`)
+      let h3 = document.createElement('h3');
+
+      h3.innerHTML = element.name;
+      ol.appendChild(h3);
+
+      element.mobileNumbers.forEach(mobile => {
+        let li1 = document.createElement('li');
+
+        li1.innerHTML = `${mobile.numType}-${mobile.mobileNumber}  <input type = 'button' id = '${element._id}' name = '${mobile._id}' value = 'delete' onclick = "del(this)">`;
+
+        ol.appendChild(li1);
+
+
+      })
+      formHandle.appendChild(ol);
+
+    }
+
+    function del(obj) {
+      axios.delete(`http://localhost:3000/employee/${obj.id}/mobile_numbers/${obj.name}`);
+      var listItems = document.getElementsByTagName("li");
+      for (var i = 0; i < listItems.length; i++) {
+        listItems[i].onclick = function () { this.parentNode.removeChild(this); }
+      }
+
+
+    }
+
+    contactFormHandle.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      axios.post(`http://localhost:3000/employee/${employeeHandle.value}/mobile_numbers`, { numType: numberTypeHandle.value, mobileNumber: numberHandle.value }).then(response => {
+
+        let addHandle = document.getElementById(`${employeeHandle.value}`);
+        let li1 = document.createElement('li');
+
+        li1.innerHTML = `${numberTypeHandle.value}-${numberHandle.value}  <input type = 'button' id = '${employeeHandle.value}' name = '${response.data.newMobile._id}' value = 'delete' onclick = "del(this)">`;
+
+        addHandle.appendChild(li1);
+
+      })
+      contactFormHandle.reset();
+
+    });
+
+    window.addEventListener('load', function () {
+
+      getEmployees();
+    }, false);
+
+
+
+
+  </script>
 </body>
+
 </html>

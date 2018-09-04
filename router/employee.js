@@ -1,7 +1,20 @@
 const express = require('express');
 const Employee = require('../models/employee');
+const Ticket = require('../models/ticket')
 const router = express.Router();
 const _=require('lodash');
+
+router.get('/:id/tickets',(req,res) => {
+    let id = req.params.id
+    Ticket.find({employee:id}).then(ticket => {
+        if(ticket.length ==0) {
+            res.send({notice:'No tickets found'})
+        }
+      res.send(ticket)
+    }).catch(err => res.send(err))
+
+  })
+  
 
 router.get('/list',(req,res) =>{
     let param = req.query.sort;
@@ -25,9 +38,24 @@ router.get('/',(req,res) =>{
    .catch(err => res.send(err))
 })
 
+router.get('/shortInfo',(req,res) => {
+   Employee.findById(req.params.id).then(employee => {
+       res.send(employee.shortInfo());
+   })
+})
+
+//if we are getiing the array of objects, but if we want perform on one object we will iterate and do it
+// router.get('/show/short_info',(req,res) =>{
+//     Employee.find().then(employees => {
+//         let result = employees.map(emp => emp.shortInfo());
+//         res.send(result);
+//     }).catch(err => res.send(err))
+// })
+
+
 
 router.get('/:id',(req,res) =>{
-   Employee.findById(req.params.id).then(employee => (employee) ? res.send(employee) : res.send({notice:'id not found'}))
+   Employee.findById(req.params.id).populate('tickets').then(employee => (employee) ? res.send(employee) : res.send({notice:'id not found'}))
 })
 
 router.post('/',(req,res) =>{
@@ -66,6 +94,12 @@ router.post('/:id/mobile_numbers',(req,res) => {
 //     })
 //     .catch(err => res.status(400).send(err))
 // })
+
+router.put('/:id',(req,res) => {
+    Employee.findByIdAndUpdate(req.params.id,{$set:req.body},{new:true,runValidators:true}).then(employee =>{
+        res.send(employee);
+    }).catch(err => res.send(err))
+})
 
 router.put('/:id/mobile_numbers/:mobile_id',(req,res) =>{
     let id  = req.params.id;
