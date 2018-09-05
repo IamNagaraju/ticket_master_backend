@@ -1,13 +1,15 @@
 const express = require('express');
-const Ticket = require('../models/ticket');
-const router = express.Router();
 const _=require('lodash');
+
+const Ticket = require('../models/ticket');
+const {authenticateUser } = require('../middlewares/authentication');
+const router = express.Router();
 // router.get('/', (req, res) => {
 //     res.send({ msg: 'welcome to ticket master' })
 //   })
 
 
-  router.get('/', (req, res) => {
+  router.get('/', authenticateUser, (req, res) => {
     Ticket.find()
       .then((tickets) => {
         res.send(tickets)
@@ -17,7 +19,7 @@ const _=require('lodash');
       })
   })
   
-  router.get('/:id',(req,res) => {
+  router.get('/:id',authenticateUser,(req,res) => {
     let id =req.params.id;
     Ticket.findById(id).populate('employee').then(ticket =>{
       if(ticket) {
@@ -27,7 +29,7 @@ const _=require('lodash');
       }
     })
   })
-router.get('/status/open',(req,res)=> {
+router.get('/status/open',authenticateUser,(req,res)=> {
   Ticket.openTickets().then(tickets =>{
     if(tickets) {
       res.send(tickets);
@@ -36,7 +38,7 @@ router.get('/status/open',(req,res)=> {
   });
 });
 
-router.get('/status/completed',(req,res)=> {
+router.get('/status/completed',authenticateUser,(req,res)=> {
   Ticket.completdTickets().then(tickets =>{
     if(tickets) {
       res.send(tickets);
@@ -45,7 +47,7 @@ router.get('/status/completed',(req,res)=> {
   });
 });
 
-router.get('/priority/:value',(req,res) =>{
+router.get('/priority/:value',authenticateUser,(req,res) =>{
   Ticket.findByPriority(req.params.value).then(tickets =>{
     res.send(tickets);
   });
@@ -53,7 +55,7 @@ router.get('/priority/:value',(req,res) =>{
 
 
 
-  router.post('/', (req, res) => {
+  router.post('/', authenticateUser,(req, res) => {
     let body =_.pick(req.body,['name','department','message','priority','employee'])
     let ticket = new Ticket(body)
     ticket.save().then((ticket) => {
@@ -64,7 +66,7 @@ router.get('/priority/:value',(req,res) =>{
       })
   })
   
-  router.get('/:id', (req, res) => {
+  router.get('/:id',authenticateUser,(req, res) => {
     let id = req.params.id;
     // if (!ObjectId.isValid(req.params.id)) {
     //   res.send({ notice: 'not a valid object id' })
@@ -84,7 +86,7 @@ router.get('/priority/:value',(req,res) =>{
       })
   })
   
-  router.put('/:id', (req, res) => {
+  router.put('/:id',authenticateUser, (req, res) => {
     let id = req.params.id;//req.body is an object
     let body = _.pick(req.body,['name','department','message','priority','status'])
   
@@ -103,7 +105,7 @@ router.get('/priority/:value',(req,res) =>{
       })
   })
   
-  router.delete('/:id', (req, res) => {
+  router.delete('/:id', authenticateUser,(req, res) => {
     let id = req.params.id;
     Ticket.findByIdAndRemove(id).then((ticket) => {
       if (ticket) {
