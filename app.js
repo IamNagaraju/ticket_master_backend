@@ -1,36 +1,59 @@
 const express = require('express');
-const bodyParser = require('body-parser')
-const morgan = require('morgan')
-const _=require('lodash');
+const bodyParser = require('body-parser');
+const _ = require('lodash');
+const { ObjectId } = require('mongodb');
 
-const {ticketRouter} = require('./router/ticket');
-const { ObjectId } = require('mongodb')
-const { User } = require('../ticket-master-back-end/models/user')
-const { usersRouter } = require('./router/user')
+const morgan = require('morgan');
 const mongoose = require('./config/db');
-const Ticket = require('./models/ticket');
-const {employeeRouter} = require('./router/employee');
+
+const { Ticket } = require('./models/ticket');
+const { User } = require('./models/user');
+
+const { ticketRouter } = require('./routes/ticket');
+const { employeeRouter } = require('./routes/employee');
+const { usersRouter } = require('./routes/user');
+
 const app = express();
-
 const port = 3000;
-// MiddleWare
+//Middlewares
 app.use(bodyParser.json());
+app.use(morgan('dev'));
 
-app.param('id',(req,res,next) =>{
-    if(!ObjectId.isValid(req.params.id)){
-      res.send({notice:'not a valid id'})
-    }
-  else{
-    next();
+app.use('/tickets', ticketRouter);
+app.use('/employees', employeeRouter);
+app.use('/users', usersRouter);
+
+app.param('id', (req, res, next) => {
+  let id = req.params.id;
+  if (!ObjectId.isValid(id)) {
+    res.send({
+      notice: 'Object id is invalid'
+    })
   }
+  next();
 })
 
-app.use(morgan('short'));
+// app.use('/tickets/id',(req,res,next) => {
+//     let id = req.params.id;
+//        if(!ObjectId.isValid(id)){
+//                res.send({
+//                    notice : 'Object id is invalid'
+//                })
+//            }
+//            next();
+//    })
 
-app.use('/tickets',ticketRouter);
-app.use('/employee',employeeRouter);
-app.use('/users',usersRouter);
+//custom logger middleware
+// app.use((req,res,next) => {
+//     console.log(`${req.method} - ${req.url} - ${req.ip} - ${new Date()}`);
+// });
+
+//Route Handler
+// app.Method(Path,Handler)
+
+
+
 
 app.listen(port, () => {
-  console.log('listing to port num ' + port);
+  console.log('listening port', port);
 })

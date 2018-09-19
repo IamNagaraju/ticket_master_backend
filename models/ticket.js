@@ -33,6 +33,10 @@ const ticketSchema = new Schema({
     employee:{
         type:Schema.Types.ObjectId,
         ref:'Employee'
+    },
+    user:{
+        type:Schema.Types.ObjectId,
+        ref:'user'
     }
 })
 //no using of arrow fucntions when we are using this keyword
@@ -57,4 +61,4 @@ ticketSchema.pre('save',function(next) {
 
 const Ticket = mongoose.model('Ticket',ticketSchema);
 
-module.exports = Ticket;
+module.exports = {Ticket};
